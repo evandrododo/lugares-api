@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD: "12345678"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "lugares-api"
+    ports:
+      - "5432:5432"
+    volumes:
+    # Alterar essa informação para funcionar em sua máquina
+      - ./localdatabase/PostgreSQL:/var/lib/postgresql/data
+    networks:
+      - postgres-compose-network
+
+networks:
+  postgres-compose-network:
+    driver: bridge
