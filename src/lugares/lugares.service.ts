@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/auth/user.entity';
 import { CreateLugarDto } from './dto/create-lugar.dto';
 import { GetLugaresFilterDto } from './dto/get-lugares-filter.dto';
 import { Lugar } from './lugar.entity';
@@ -12,8 +13,8 @@ export class LugaresService {
     private readonly lugaresRepository: LugaresRepository,
   ) {}
 
-  async getLugarById(id: string): Promise<Lugar> {
-    const found = await this.lugaresRepository.findOne(id);
+  async getLugarById(id: string, user: User): Promise<Lugar> {
+    const found = await this.lugaresRepository.findOne({ where: { id, user } });
 
     if (!found) {
       throw new NotFoundException(`Lugar with ID "${id}" not found`);
@@ -22,16 +23,16 @@ export class LugaresService {
     return found;
   }
 
-  createLugar(createLugarDto: CreateLugarDto): Promise<Lugar> {
-    return this.lugaresRepository.createLugar(createLugarDto);
+  createLugar(createLugarDto: CreateLugarDto, user: User): Promise<Lugar> {
+    return this.lugaresRepository.createLugar(createLugarDto, user);
   }
 
-  getLugares(filterDto: GetLugaresFilterDto): Promise<Lugar[]> {
-    return this.lugaresRepository.getLugares(filterDto);
+  getLugares(filterDto: GetLugaresFilterDto, user: User): Promise<Lugar[]> {
+    return this.lugaresRepository.getLugares(filterDto, user);
   }
 
-  async deleteLugar(id: string): Promise<void> {
-    const result = await this.lugaresRepository.delete(id);
+  async deleteLugar(id: string, user: User): Promise<void> {
+    const result = await this.lugaresRepository.delete({ id, user });
 
     if (result.affected === 0) {
       throw new NotFoundException(`Lugar with ID "${id}" not found`);
@@ -44,8 +45,9 @@ export class LugaresService {
     id: string,
     latitude: number,
     longitude: number,
+    user: User,
   ): Promise<Lugar> {
-    const lugar = await this.getLugarById(id);
+    const lugar = await this.getLugarById(id, user);
 
     lugar.latitude = latitude;
     lugar.longitude = longitude;

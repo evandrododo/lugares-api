@@ -14,8 +14,8 @@ services:
     # Alterar essa informação para funcionar em sua máquina
       - ./localdatabase/PostgreSQL:/var/lib/postgresql/data
     networks:
-      - postgres-compose-network
+      - compose-network
 
 networks:
-  postgres-compose-network:
+  compose-network:
     driver: bridge
